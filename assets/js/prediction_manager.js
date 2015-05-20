@@ -4,6 +4,8 @@
     this.endpoint = this.endpoint_base;
     this.predictions = {};
     this.currently_on = [];
+    this.fetching = false;
+    this.light_analyzer = new LightAnalyzer();
     this.bind();
   }
 
@@ -16,6 +18,14 @@
     bind: function(){
       this.on('stops:updated', this.on_stops_updated.bind(this));
       this.on('new:prediction:data', this.on_new_prediction_data.bind(this));
+
+      this.light_analyzer.on('turn:on', function(e, stop_id){
+        this.trigger('turn:on', stop_id); 
+      }.bind(this));
+
+      this.light_analyzer.on('turn:off', function(e, stop_id){
+        this.trigger('turn:off', stop_id);
+      }.bind(this));
     },
 
     update_stops: function(stops){
@@ -39,6 +49,14 @@
 
     fetch_new_prediction_data: function(){
       var endpoint = this.endpoint;
+
+      if(this.fetching) {
+        console.log('was still fetching'); 
+        return;
+      }
+
+      this.fetching = true;
+      
       $.ajax({
         url: endpoint,
         type: 'GET',
@@ -72,12 +90,8 @@
     },
 
     on_new_prediction_data: function(e, new_predictions){
-      var analyzer = new PredictionAnalyzer(this.currently_on, new_predictions);   
-
-
-      this.trigger('turn:off', {ids: analyzer.to_turn_off});
-      this.trigger('turn:on',  {ids: analyzer.to_turn_on});
-      this.currently_on = analyzer.should_be_on;
+      this.light_analyzer.analyze_trips(new_predictions);
+      this.fetching = false;
     }
   });
 

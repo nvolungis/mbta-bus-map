@@ -24,16 +24,12 @@
       }.bind(this));
     },
 
-    turn_on: function(e, data){
-      data.ids.forEach(function(stop_id){
-        this.trigger('turn:stop:on', this.stops[stop_id].marker);
-      }.bind(this));
+    turn_on: function(e, stop_id){
+      this.trigger('turn:stop:on', this.stops[stop_id].marker);
     },
 
-    turn_off: function(e, data){
-      data.ids.forEach(function(stop_id){
-        this.trigger('turn:stop:off', this.stops[stop_id].marker);
-      }.bind(this));
+    turn_off: function(e, stop_id){
+      this.trigger('turn:stop:off', this.stops[stop_id].marker);
     },
 
     get_route_directions: function(){
