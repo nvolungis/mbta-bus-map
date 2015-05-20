@@ -9,6 +9,7 @@
 
   $.extend(PredictionManager.prototype, $.eventEmitter, {
     start: function(){
+      this.fetch_new_prediction_data();
       setInterval(this.fetch_new_prediction_data.bind(this), 4000);
     },
 
